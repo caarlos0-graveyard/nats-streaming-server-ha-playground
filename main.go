@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/nats-io/stan"
@@ -24,13 +24,7 @@ func main() {
 }
 
 func run() error {
-	var addr = addrs[rand.Intn(len(addrs))]
-	log.Println("connecting to", addr)
-
-	sc, err := stan.Connect("test-cluster", "client-1", stan.Option(func(opts *stan.Options) error {
-		opts.NatsURL = addr
-		return nil
-	}))
+	sc, err := stan.Connect("test-cluster", "client-1", stan.NatsURL(strings.Join(addrs, ",")))
 	if err != nil {
 		return err
 	}
