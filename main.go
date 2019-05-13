@@ -2,32 +2,52 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"math/rand"
 	"time"
 
 	"github.com/nats-io/stan"
 )
 
+var addrs = []string{
+	"nats://localhost:4221",
+	"nats://localhost:4222",
+	"nats://localhost:4223",
+}
+
 func main() {
-	sc, err := stan.Connect("test-cluster", "my-cli")
+	for {
+		if err := run(); err != nil {
+			log.Println(err)
+		}
+	}
+}
+
+func run() error {
+	var addr = addrs[rand.Intn(len(addrs))]
+	log.Println("connecting to", addr)
+
+	sc, err := stan.Connect("test-cluster", "client-1", stan.Option(func(opts *stan.Options) error {
+		opts.NatsURL = addr
+		return nil
+	}))
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer sc.Close()
 
 	sub, err := sc.Subscribe("foo", func(m *stan.Msg) {
-		fmt.Printf("Received a message: %s\n", string(m.Data))
+		fmt.Print(".")
 	})
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer sub.Unsubscribe()
 
-	var i = 1
 	for {
-		if err := sc.Publish("foo", []byte(fmt.Sprintf("Hello World %d", i))); err != nil {
-			panic(err)
+		if err := sc.Publish("foo", []byte("msg")); err != nil {
+			return err
 		}
-		i++
 		time.Sleep(time.Millisecond * 100)
 	}
 }

@@ -2,41 +2,26 @@ version: '3.7'
 
 services:
   node1:
-    labels:
-      traefik.frontend.rule: 'Host: localhost'
-      traefik.port: 4222
-      traefik.backend.loadbalancer.stickiness: true
     image: nats-streaming
     volumes:
     - ./config-1.conf:/config.conf
     command: --config /config.conf
+    ports:
+      - 4221:4222
   node2:
-    labels:
-      traefik.frontend.rule: 'Host: localhost'
-      traefik.port: 4222
-      traefik.backend.loadbalancer.stickiness: true
     image: nats-streaming
     volumes:
     - ./config-2.conf:/config.conf
     command: --config /config.conf
+    ports:
+      - 4222:4222
   node3:
-    labels:
-      traefik.frontend.rule: 'Host: localhost'
-      traefik.port: 4222
-      traefik.backend.loadbalancer.stickiness: true
     image: nats-streaming
     volumes:
     - ./config-3.conf:/config.conf
     command: --config /config.conf
-  traefik:
-    image: traefik
-    command: --api --docker
     ports:
-      - "80:80"
-      - "4222:80"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - 4223:4222
 
 networks:
   default:
