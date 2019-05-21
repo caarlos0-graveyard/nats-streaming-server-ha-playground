@@ -3,30 +3,25 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/nats-io/stan"
 )
 
-var addrs = []string{
-	"nats://localhost:4221",
-	"nats://localhost:4222",
-	"nats://localhost:4223",
-}
-
 func main() {
-	for {
-		if err := run(); err != nil {
-			log.Println(err)
-		}
-	}
-}
-
-func run() error {
-	sc, err := stan.Connect("test-cluster", "client-1", stan.NatsURL(strings.Join(addrs, ",")))
+	sc, err := stan.Connect(
+		"test-cluster",
+		"client-1",
+		stan.Pings(1, 3),
+		stan.NatsURL(strings.Join(os.Args[1:], ",")),
+		stan.SetConnectionLostHandler(func(con stan.Conn, reason error) {
+			log.Fatalf("Connection lost, reason: %v, will retry", reason)
+		}),
+	)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	defer sc.Close()
 
@@ -34,13 +29,13 @@ func run() error {
 		fmt.Print(".")
 	})
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	defer sub.Unsubscribe()
 
 	for {
 		if err := sc.Publish("foo", []byte("msg")); err != nil {
-			return err
+			log.Fatalln(err)
 		}
 		time.Sleep(time.Millisecond * 100)
 	}
