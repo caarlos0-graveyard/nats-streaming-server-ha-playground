@@ -5,21 +5,21 @@ services:
     image: nats-streaming
     volumes:
     - ./config-1.conf:/config.conf
-    command: --config /config.conf
+    command: --config /config.conf -D
     ports:
       - 4221:4222
   node2:
     image: nats-streaming
     volumes:
     - ./config-2.conf:/config.conf
-    command: --config /config.conf
+    command: --config /config.conf -D
     ports:
       - 4222:4222
   node3:
     image: nats-streaming
     volumes:
     - ./config-3.conf:/config.conf
-    command: --config /config.conf
+    command: --config /config.conf -D
     ports:
       - 4223:4222
 

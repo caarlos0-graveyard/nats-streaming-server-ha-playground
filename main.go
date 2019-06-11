@@ -14,8 +14,9 @@ func main() {
 	sc, err := stan.Connect(
 		"test-cluster",
 		os.Args[1],
-		stan.Pings(1, 3),
+		stan.Pings(1, 30),
 		stan.MaxPubAcksInflight(20),
+		stan.PubAckWait(5*time.Second),
 		stan.NatsURL(strings.Join(os.Args[2:], ",")),
 		stan.SetConnectionLostHandler(func(con stan.Conn, reason error) {
 			log.Fatalf("Connection lost, reason: %v, will retry", reason)
@@ -26,14 +27,14 @@ func main() {
 	}
 	defer sc.Close()
 
-	sub, err := sc.Subscribe("foo", func(m *stan.Msg) {
+	sub, err := sc.QueueSubscribe("foo", "qfoo", func(m *stan.Msg) {
 		if err := m.Ack(); err != nil {
 			log.Println(err)
 		}
 		// fake processing time
 		time.Sleep(time.Millisecond * 10)
-		fmt.Print(".")
-	}, stan.MaxInflight(10), stan.SetManualAckMode())
+		fmt.Println(string(m.Data))
+	}, stan.MaxInflight(10), stan.AckWait(time.Second), stan.SetManualAckMode())
 	if err != nil {
 		log.Fatalln(err)
 	}
