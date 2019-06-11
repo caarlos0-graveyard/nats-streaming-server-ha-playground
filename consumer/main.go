@@ -19,7 +19,7 @@ func main() {
 		stan.PubAckWait(5*time.Second),
 		stan.NatsURL(strings.Join(os.Args[2:], ",")),
 		stan.SetConnectionLostHandler(func(con stan.Conn, reason error) {
-			log.Fatalf("Connection lost, reason: %v, will retry", reason)
+			log.Fatalf("Connection lost, reason: %v", reason)
 		}),
 	)
 	if err != nil {
