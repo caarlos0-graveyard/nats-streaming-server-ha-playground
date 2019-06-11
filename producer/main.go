@@ -30,8 +30,10 @@ func main() {
 
 	var i int64
 	for {
-		if err := sc.Publish("foo", []byte(fmt.Sprintf("%s msg %d", id, i))); err != nil {
-			log.Println(err)
+		msg := fmt.Sprintf("%s msg %d", id, i)
+		if err := sc.Publish("foo", []byte(msg)); err != nil {
+			log.Println("failed to publish '", msg, "':", err)
+			continue
 		}
 		i++
 		fmt.Print(".")
