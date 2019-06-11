@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/nats-io/stan"
 )
@@ -26,18 +25,10 @@ func main() {
 	}
 	defer sc.Close()
 
-	sub, err := sc.Subscribe("foo", func(m *stan.Msg) {
-		if err := m.Ack(); err != nil {
+	for {
+		if err := sc.Publish("foo", []byte("msg")); err != nil {
 			log.Println(err)
 		}
-		// fake processing time
-		time.Sleep(time.Millisecond * 10)
 		fmt.Print(".")
-	}, stan.MaxInflight(10), stan.SetManualAckMode())
-	if err != nil {
-		log.Fatalln(err)
 	}
-	defer sub.Unsubscribe()
-
-	time.Sleep(1000 * time.Hour)
 }
