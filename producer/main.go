@@ -11,9 +11,10 @@ import (
 )
 
 func main() {
+	id := os.Args[1]
 	sc, err := stan.Connect(
 		"test-cluster",
-		os.Args[1],
+		id,
 		stan.Pings(1, 30),
 		stan.MaxPubAcksInflight(20),
 		stan.PubAckWait(5*time.Second),
@@ -29,7 +30,7 @@ func main() {
 
 	var i int64
 	for {
-		if err := sc.Publish("foo", []byte(fmt.Sprintf("msg %d", i))); err != nil {
+		if err := sc.Publish("foo", []byte(fmt.Sprintf("%s msg %d", id, i))); err != nil {
 			log.Println(err)
 		}
 		i++
