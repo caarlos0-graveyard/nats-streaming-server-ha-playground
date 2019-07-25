@@ -1,13 +1,31 @@
-# nats-streaming-server cluster sample config
+# nats-streaming-server HA playground
+
+## cluster
 
 just run:
 
 ```shell
-docker-compose up
+(cd cluster && docker-compose up)
 ```
 
-and the client can be started with:
+## fault tolerant
+
+just run:
+
+```shell
+(cd ft && docker-compose up)
+```
+
+## consumer/producer
+
+### Producer:
 
 ```sh
-go run main.go
+go run producer/main.go CLIENT_ID nats://localhost:4221 nats://localhost:4222 nats://localhost:4223
+```
+
+### Consumer
+
+```sh
+go run consumer/main.go CLIENT_ID nats://localhost:4221 nats://localhost:4222 nats://localhost:4223
 ```
