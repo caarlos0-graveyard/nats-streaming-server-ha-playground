@@ -3,7 +3,7 @@ module github.com/caarlos0/nats-test-cli
 go 1.12
 
 require (
-	github.com/gogo/protobuf v1.2.1 // indirect
+	github.com/gogo/protobuf v1.3.0 // indirect
 	github.com/nats-io/go-nats v1.7.2 // indirect
 	github.com/nats-io/go-nats-streaming v0.4.4 // indirect
 	github.com/nats-io/nkeys v0.0.2 // indirect
